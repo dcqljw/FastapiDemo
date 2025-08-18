@@ -1,5 +1,6 @@
 import os
-
+import string
+import random
 import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -7,13 +8,26 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
 
 from src.databases.mysql_session import register_mysql
-from src.core.settings import settings
+from src.api import auth_api
+from src.models.UserModel import User
+
+
+async def create_admin_user():
+    user = await User.get_or_none(username="admin")
+    if not user:
+        password = "".join(random.sample(string.ascii_letters + string.digits, 8))
+        print("创建管理员账户")
+        print(f"管理员初始账号：admin")
+        print(f"管理员初始密码：{password}")
+        user = User(username="admin", email="", password=password)
+        await user.save()
 
 
 @asynccontextmanager
 async def init_app(app: FastAPI):
     async with register_mysql(app):
         pass
+    await create_admin_user()
     yield
 
 
@@ -23,10 +37,7 @@ app = FastAPI(docs_url=None, redoc_url=None, lifespan=init_app)
 static_path = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
-
-@app.get("/")
-def index():
-    return {"message": "Hello World"}
+app.include_router(auth_api.route)
 
 
 @app.get("/docs", include_in_schema=False)

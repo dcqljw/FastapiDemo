@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     MYSQL_HOST: str = ""
     MYSQL_PORT: str = ""
     MYSQL_DB: str = ""
+    SECRET_KEY: str = ""
+    ALGORITHM: str = "HS256"
 
 
 settings = Settings()
