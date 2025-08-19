@@ -1,4 +1,6 @@
 import aerich
+import os
+from pathlib import Path
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -18,6 +20,17 @@ from src.core.settings import settings
 # MySQL 将完全跳过上述 DNS 解析过程
 # 仅使用 IP 地址来识别客户端，不再进行主机名解析
 
+models_dir = Path(__file__).parent.parent / "models"
+model_modules = ['aerich.models']
+for root, folder, file in os.walk(models_dir):
+    for i in file:
+        filename = os.path.splitext(i)[0]
+        if filename.endswith("Model"):
+            # 将文件路径转换为Python模块路径
+            relative_path = Path(root).relative_to(models_dir.parent.parent)
+            module_path = str(relative_path / filename).replace(os.path.sep, '.')
+            model_modules.append(module_path)
+            print(f"Found model: {module_path}")
 db_config = {
     'connections': {
         'default': {
@@ -33,7 +46,7 @@ db_config = {
     },
     'apps': {
         'models': {
-            'models': ['src.models.UserModel', 'aerich.models'],
+            'models': model_modules,
             # If no default_connection specified, defaults to 'default'
             'default_connection': 'default',
         }

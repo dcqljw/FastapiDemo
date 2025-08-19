@@ -16,7 +16,7 @@ def get_password_hash(password: str) -> str:
     return context.hash(password)
 
 
-def create_access_token(data: dict, expire_minutes: timedelta = 10):
+def create_access_token(data: dict, expire_minutes: timedelta):
     expire = datetime.now(timezone.utc) + expire_minutes
     to_encode = {"exp": expire, **data}
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
@@ -25,10 +25,7 @@ def create_access_token(data: dict, expire_minutes: timedelta = 10):
 def verify_token(token: str):
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        print(payload)
-    except jwt.ExpiredSignatureError:
-        print("令牌已过期")
-        return None
+        return payload
     except Exception as e:
         print(f"验证错误: {str(e)}")
         return None

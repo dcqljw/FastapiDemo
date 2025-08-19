@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     MYSQL_DB: str = ""
     SECRET_KEY: str = ""
     ALGORITHM: str = "HS256"
+    REDIS_HOST: str = ""
+    REDIS_PORT: str = ""
+    REDIS_PASSWORD: str = ""
 
 
 settings = Settings()
