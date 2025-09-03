@@ -8,3 +8,4 @@ class User(models.Model):
     password = fields.CharField(max_length=255)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
+    is_first_login = fields.BooleanField(default=True)

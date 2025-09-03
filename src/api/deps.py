@@ -8,14 +8,16 @@ from src.core.security import verify_token
 from src.databases.redis_session import get_redis
 
 
-async def get_token(authorization: Annotated[str | None, Header()],
-                    redis_client: redis.Redis = Depends(get_redis)) -> str | None:
-    payload = verify_token(authorization)
-    if authorization and payload:
+async def get_token(Authorization: Annotated[str | None, Header()] = None,
+                    redis_client: redis.Redis = Depends(get_redis)):
+    payload = verify_token(Authorization)
+    print(payload)
+    if Authorization and payload:
         print(payload)
         redis_token = await redis_client.get(payload['uid'])
-        if redis_token == authorization:
-            return authorization
+        print(redis_token)
+        if redis_token == Authorization:
+            return payload
     raise HTTPException(status_code=401, detail="Invalid authorization")
 
 

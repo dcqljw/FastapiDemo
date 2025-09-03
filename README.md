@@ -3,6 +3,10 @@
 - uv
 - python
 - aerich
+#### aerich
+```shell
+aerich upgrade
+```
 ```text
 .
 ├── README.md

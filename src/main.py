@@ -7,9 +7,10 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.databases.mysql_session import register_mysql
-from src.api import auth_api
+from src.api import auth_api, user_api
 from src.models.user.UserModel import User
 from src.core.security import get_password_hash
 
@@ -36,11 +37,19 @@ async def init_app(app: FastAPI):
 
 app = FastAPI(docs_url=None, redoc_url=None, lifespan=init_app)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # 设置static，里面存放了swaggerui的css、js 实现离线访问
 static_path = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
-app.include_router(auth_api.route)
+app.include_router(auth_api.router)
+app.include_router(user_api.router)
 
 
 @app.get("/docs", include_in_schema=False)

@@ -35,5 +35,5 @@ if __name__ == '__main__':
     print(get_password_hash('123456'))
     token = create_access_token({"username": "admin"}, timedelta(seconds=10))
     print(token)
-    # token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzU1NTYxMjcxfQ.XEOVjogiWxUTT995ot5ZPYE37ZvhcO_1ox60nI-6iJ8"
+    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTc3NzQwNjUsInVpZCI6M30.WN_JTdi8vgY-QIEHhxJV4K6cpya7tZQekt5EoihVuZ0"
     print(verify_token(token))
