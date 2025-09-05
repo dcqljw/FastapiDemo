@@ -44,7 +44,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# 设置static，里面存放了swaggerui的css、js 实现离线访问
+# 设置static，里面存放了swagger-ui的css、js 实现离线访问
 static_path = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 

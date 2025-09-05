@@ -1,3 +1,4 @@
+from typing import Any
 from pydantic import BaseModel
 
 
@@ -7,4 +8,4 @@ class ResponseSchema(BaseModel):
     """
     code: int = 2000
     message: str = "success"
-    data: dict = {}
+    data: Any = None
