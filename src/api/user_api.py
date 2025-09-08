@@ -15,8 +15,6 @@ UserPydantic = pydantic_model_creator(User, name="User")
 
 @router.post("/info")
 async def info(token: TokenDeps):
-    print(token)
-    print(type(token))
     user_data = await User.get_or_none(id=token['uid'])
     user_data = await UserPydantic.from_tortoise_orm(user_data)
     return ResponseSchema(data=UserResponse(**user_data.model_dump()))

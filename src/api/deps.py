@@ -18,7 +18,7 @@ async def get_token(Authorization: Annotated[str | None, Header()] = None,
         print(redis_token)
         if redis_token == Authorization:
             return payload
-    raise HTTPException(status_code=401, detail="Invalid authorization")
+    raise HTTPException(status_code=401, detail="登录过期,请重新登录!")
 
 
 TokenDeps = Annotated[str, Depends(get_token)]
