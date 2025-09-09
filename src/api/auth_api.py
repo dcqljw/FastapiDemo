@@ -51,8 +51,10 @@ async def edit_password(
     return ResponseSchema(code=2001, message="修改失败")
 
 
-@router.get("/get")
-async def get(
-        token: TokenDeps
+@router.post("/logout")
+async def logout(
+        token: TokenDeps,
+        redis_client: redis.Redis = Depends(get_redis)
 ):
-    return token
+    await redis_client.delete(token['uid'])
+    return ResponseSchema(data={"message": "退出成功"})
