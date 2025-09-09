@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Header
+from fastapi import APIRouter
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 from src.api.deps import TokenDeps
@@ -18,8 +16,3 @@ async def info(token: TokenDeps):
     user_data = await User.get_or_none(id=token['uid'])
     user_data = await UserPydantic.from_tortoise_orm(user_data)
     return ResponseSchema(data=UserResponse(**user_data.model_dump()))
-
-
-@router.get("/test")
-async def test(authorization: Annotated[str | None, Header()] = None):
-    return {"code": 200, "data": authorization}

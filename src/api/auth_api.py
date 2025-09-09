@@ -1,33 +1,39 @@
+from typing import Annotated
 from datetime import timedelta
 
 import redis.asyncio as redis
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 
 from src.models.user.UserModel import User
-from src.models.user.UserSchema import UserLoginSchema, UserEditPasswordSchema
+from src.models.user.UserSchema import UserEditPasswordSchema
 from src.models.system.ResponseSchema import ResponseSchema
 from src.core.security import verify_password, create_access_token, get_password_hash
 from src.api.deps import TokenDeps
 from src.databases.redis_session import get_redis
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth", tags=['auth'])
 
 
 @router.post("/login")
-async def login(
-        form_data: UserLoginSchema,
+async def token(
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
         redis_client: redis.Redis = Depends(get_redis)
 ):
     data = await User.get_or_none(username=form_data.username)
-    response_data = {}
     if data:
         if verify_password(form_data.password, data.password):
             token = create_access_token({"uid": data.id}, timedelta(days=10))
-            response_data['token'] = token
-            response_data['is_first_login'] = data.is_first_login
             await redis_client.set(data.id, token)
-            return ResponseSchema(data=response_data)
-    return ResponseSchema(code=4000, message="用户名或密码错误")
+            return {
+                "access_token": token,
+                "token_type": "bearer"
+            }
+    raise HTTPException(
+        status_code=401,
+        detail="检查用户名和密码",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 
 @router.post("/edit_password")
