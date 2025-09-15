@@ -18,8 +18,6 @@ redis_pool = redis.ConnectionPool(
 async def get_redis() -> AsyncGenerator[Redis, Any]:
     redis_client = redis.Redis(connection_pool=redis_pool)
     try:
-        print("连接。。。。。")
         yield redis_client
     finally:
-        print("断开。。。。。")
-        await redis_client.close()
+        await redis_client.aclose()
