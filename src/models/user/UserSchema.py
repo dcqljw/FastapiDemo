@@ -17,6 +17,10 @@ class UserLoginSchema(UserBase):
     password: str
 
 
+class UserCreateSchema(UserBase):
+    password: str
+
+
 class UserEditPasswordSchema(UserBase):
     old_password: str
     new_password: str
@@ -25,3 +29,8 @@ class UserEditPasswordSchema(UserBase):
 class UserResponse(UserBase):
     email: str
     created_at: datetime
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y年%m月%d日")
+        }
