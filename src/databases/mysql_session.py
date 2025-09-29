@@ -62,7 +62,7 @@ async def register_mysql(app: FastAPI):
         async with RegisterTortoise(
                 app,
                 config=db_config,
-                generate_schemas=True,
+                generate_schemas=False,
         ):
             yield
         await Tortoise.close_connections()

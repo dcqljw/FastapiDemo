@@ -1,7 +1,7 @@
-from tortoise import fields, models
+from tortoise import fields, Model
 
 
-class User(models.Model):
+class User(Model):
     id = fields.IntField(pk=True)
     username = fields.CharField(max_length=255)
     email = fields.CharField(max_length=255)
@@ -9,3 +9,5 @@ class User(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
     is_first_login = fields.BooleanField(default=True)
+
+    role = fields.ForeignKeyField("models.Role", related_name="users", on_delete=fields.CASCADE, null=True)

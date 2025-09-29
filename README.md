@@ -5,6 +5,7 @@
 - aerich
 #### aerich
 ```shell
+aerich migrate --name add_role
 aerich upgrade
 ```
 ```text
