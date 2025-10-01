@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.databases.mysql_session import register_mysql
 from src.api import auth_api, user_api
 from src.models.user.UserModel import User
-from src.core.security import get_password_hash
+from src.core.security import get_password_hash, id_generator
 
 
 async def create_admin_user():
@@ -23,7 +23,7 @@ async def create_admin_user():
         print(f"管理员初始账号：admin")
         print(f"管理员初始密码：{password}")
         password = get_password_hash(password)
-        user = User(username="admin", email="", password=password)
+        user = User(uid=id_generator.generate_id(), username="admin", email="", password=password, nickname="admin")
         await user.save()
 
 

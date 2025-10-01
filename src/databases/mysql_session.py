@@ -1,3 +1,5 @@
+import logging
+
 import aerich
 import os
 from pathlib import Path
@@ -59,10 +61,15 @@ db_config = {
 @asynccontextmanager
 async def register_mysql(app: FastAPI):
     try:
-        async with RegisterTortoise(
+        logging.basicConfig(level=logging.DEBUG)
+        logger = logging.getLogger('tortoise')
+        logger.setLevel(logging.DEBUG)
+        async with (
+            RegisterTortoise(
                 app,
                 config=db_config,
                 generate_schemas=False,
+            )
         ):
             yield
         await Tortoise.close_connections()

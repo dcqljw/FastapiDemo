@@ -23,8 +23,8 @@ async def token(
     data = await User.get_or_none(username=form_data.username)
     if data:
         if verify_password(form_data.password, data.password):
-            token = create_access_token({"uid": data.id}, timedelta(days=10))
-            await redis_client.set(data.id, token)
+            token = create_access_token({"uid": data.uid}, timedelta(days=10))
+            await redis_client.set(data.uid, token)
             return {
                 "access_token": token,
                 "token_type": "bearer"

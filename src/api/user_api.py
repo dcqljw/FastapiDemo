@@ -2,14 +2,13 @@ from fastapi import APIRouter
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 from src.api.deps import TokenDeps
-from src.models.user.UserModel import User
+from src.models.user.UserModel import User, UserPydantic
 from src.models.user.UserSchema import UserResponse, UserCreateSchema
-from src.models.role.RoleModel import Role
+from src.models.role.RoleModel import Role, UserRole
+from src.models.permission.PermissionModel import Permission, RolePermission
 from src.models.system.ResponseSchema import ResponseSchema
 
 router = APIRouter(prefix="/user", tags=['user'])
-
-UserPydantic = pydantic_model_creator(User, name="User")
 
 
 @router.post("/info")
@@ -49,17 +48,21 @@ async def delete_user(user_id: int, token: TokenDeps):
     return ResponseSchema(code=2001, message="用户不存在")
 
 
-@router.post("/test")
-async def test():
-    role = await Role.create(name="admin", description="管理员")
-    user = await User.create(username="test1", password="test", email="")
-    role.users = user
+@router.post("/user_add_role")
+async def user_add_role():
+    role = await Role.get(role_id=1)
+    user = await User.get(uid=761396943799717888)
+    await UserRole.create(user=user, role=role)
     return ResponseSchema(data={"message": "创建成功"})
 
 
-@router.post("/testget")
-async def testget():
-    user = await User.get_or_none(username="admin").prefetch_related("role")
-    role = user.role.name
-    user = await UserPydantic.from_tortoise_orm(user)
-    return ResponseSchema(data=UserResponse(**user.model_dump(), role=role))
+@router.post("/get_user_role")
+async def get_user_role():
+    user = await User.get(uid=761396943799717888).prefetch_related("user_roles__role__role_permissions__permission")
+    # for i in user.user_roles:
+    #     role = i.role
+    #     print(role.role_id)
+    #     for j in role.role_permissions:
+    #         pe = j.permission
+    #         print(pe.resource)
+    return ResponseSchema(data={})
