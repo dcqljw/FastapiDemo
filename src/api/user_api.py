@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 from tortoise.contrib.pydantic import pydantic_model_creator
 
@@ -13,9 +15,15 @@ router = APIRouter(prefix="/user", tags=['user'])
 
 @router.post("/info")
 async def info(token: TokenDeps):
-    user_data = await User.get_or_none(id=token['uid'])
-    user_data = await UserPydantic.from_tortoise_orm(user_data)
-    return ResponseSchema(data=UserResponse(**user_data.model_dump()))
+    user_data = await User.get_or_none(uid=token['uid']).prefetch_related("user_roles__role")
+    if user_data:
+        roles = [user_role.role.name for user_role in user_data.user_roles]
+        user_data = await UserPydantic.from_tortoise_orm(user_data)
+        user = UserResponse(**user_data.model_dump()).model_dump()
+        user.update(roles=roles)
+        return ResponseSchema(data=user)
+    else:
+        return ResponseSchema(code=2001, message="用户不存在")
 
 
 @router.post("/create_user")
@@ -31,11 +39,14 @@ async def create_user(user_create: UserCreateSchema, token: TokenDeps):
 
 @router.post("/get_user")
 async def get_user(token: TokenDeps):
-    user_data = await User.filter()
+    user_data = await User.filter().prefetch_related("user_roles__role")
     user_list = []
     for i in user_data:
+        roles = [user_role.role.name for user_role in i.user_roles]
         user_data = await UserPydantic.from_tortoise_orm(i)
-        user_list.append(UserResponse(**user_data.model_dump()))
+        user_dump = UserResponse(**user_data.model_dump()).model_dump()
+        user_dump.update(roles=roles)
+        user_list.append(user_dump)
     return ResponseSchema(data=user_list)
 
 

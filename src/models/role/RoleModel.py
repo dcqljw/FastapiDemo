@@ -13,3 +13,6 @@ class UserRole(models.Model):
     id = fields.IntField(pk=True, description="用户角色ID")
     user = fields.ForeignKeyField("models.User", related_name="user_roles", description="用户ID")
     role = fields.ForeignKeyField("models.Role", related_name="role_users", description="角色ID")
+
+    class Meta:
+        table = "user_role"

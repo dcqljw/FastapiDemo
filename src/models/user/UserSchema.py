@@ -27,10 +27,9 @@ class UserEditPasswordSchema(UserBase):
 
 
 class UserResponse(UserBase):
-    id: int
+    uid: int
     email: str
     created_at: datetime
-    role: str | None
 
     class Config:
         json_encoders = {

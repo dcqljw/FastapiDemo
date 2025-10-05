@@ -11,20 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.databases.mysql_session import register_mysql
 from src.api import auth_api, user_api
-from src.models.user.UserModel import User
-from src.core.security import get_password_hash, id_generator
-
-
-async def create_admin_user():
-    user = await User.get_or_none(username="admin")
-    if not user:
-        password = "".join(random.sample(string.ascii_letters + string.digits, 8))
-        print("创建管理员账户")
-        print(f"管理员初始账号：admin")
-        print(f"管理员初始密码：{password}")
-        password = get_password_hash(password)
-        user = User(uid=id_generator.generate_id(), username="admin", email="", password=password, nickname="admin")
-        await user.save()
+from src.lifespan import create_admin_user
 
 
 @asynccontextmanager
