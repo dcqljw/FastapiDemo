@@ -21,6 +21,7 @@ async def info(token: TokenDeps):
         user_data = await UserPydantic.from_tortoise_orm(user_data)
         user = UserResponse(**user_data.model_dump()).model_dump()
         user.update(roles=roles)
+        user.update(first_login=user_data.is_first_login)
         return ResponseSchema(data=user)
     else:
         return ResponseSchema(code=2001, message="用户不存在")
